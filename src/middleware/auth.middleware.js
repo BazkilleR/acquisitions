@@ -14,7 +14,7 @@ const authMiddleware = (req, res, next) => {
   try {
     req.user = jwttoken.verify(token);
     next();
-  } catch (e) {
+  } catch {
     logger.warn('Invalid token attempt', { ip: req.ip, path: req.path });
     return res
       .status(401)
