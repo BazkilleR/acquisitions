@@ -1,116 +1,76 @@
-import { scryptSync, randomBytes, timingSafeEqual } from 'crypto';
-import { eq } from 'drizzle-orm';
-import { db } from '#config/database.js';
-import { user } from '#models/user.model.js';
 import logger from '#config/logger.js';
-import { jwttoken } from '#utils/jwt.js';
-import { cookies } from '#utils/cookies.js';
+import bcrypt from 'bcrypt';
 import { signUpSchema, signInSchema } from '#validations/auth.validation.js';
 import { formatValidationError } from '#utils/format.js';
-
-const hashPassword = password => {
-  const salt = randomBytes(16).toString('hex');
-  const hash = scryptSync(password, salt, 64).toString('hex');
-  return `${salt}:${hash}`;
-};
-
-const verifyPassword = (password, stored) => {
-  const [salt, hash] = stored.split(':');
-  const hashBuf = scryptSync(password, salt, 64);
-  return timingSafeEqual(hashBuf, Buffer.from(hash, 'hex'));
-};
+import { createUser, getUserByEmail } from '#services/auth.service.js';
+import { jwttoken } from '#utils/jwt.js';
+import { cookies } from '#utils/cookies.js';
 
 export const signup = async (req, res, next) => {
   try {
-    const result = signUpSchema.safeParse(req.body);
-    if (!result.success) {
+    const validation = signUpSchema.safeParse(req.body);
+
+    if (!validation.success) {
       return res.status(400).json({
         error: 'Validation failed',
-        details: formatValidationError(result.error),
+        details: formatValidationError(validation.error),
       });
     }
 
-    const { name, email, password, role } = result.data;
+    const { name, email, password, role } = validation.data;
+    const user = await createUser({ name, email, password, role });
 
-    const existing = await db
-      .select({ id: user.id })
-      .from(user)
-      .where(eq(user.email, email))
-      .limit(1);
-    if (existing.length > 0) {
-      return res.status(400).json({ error: 'Email already exists' });
-    }
-
-    const [newUser] = await db
-      .insert(user)
-      .values({ name, email, password: hashPassword(password), role })
-      .returning({
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-      });
-
-    const token = jwttoken.sign({
-      id: newUser.id,
-      email: newUser.email,
-      role: newUser.role,
-    });
+    const token = jwttoken.sign({ id: user.id, email: user.email, role: user.role });
     cookies.set(res, 'token', token);
 
     logger.info(`User registered: ${email}`);
-    return res.status(201).json({ message: 'User registered', user: newUser });
+    res.status(201).json({
+      message: 'User registered',
+      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+    });
   } catch (error) {
+    if (error.message === 'User already exists') {
+      return res.status(409).json({ error: 'Email already exists' });
+    }
     logger.error('Signup error:', error);
-    return next(error);
+    next(error);
   }
 };
 
 export const signin = async (req, res, next) => {
   try {
-    const result = signInSchema.safeParse(req.body);
-    if (!result.success) {
+    const validation = signInSchema.safeParse(req.body);
+
+    if (!validation.success) {
       return res.status(400).json({
         error: 'Validation failed',
-        details: formatValidationError(result.error),
+        details: formatValidationError(validation.error),
       });
     }
 
-    const { email, password } = result.data;
+    const { email, password } = validation.data;
+    const user = await getUserByEmail(email);
 
-    const [found] = await db
-      .select()
-      .from(user)
-      .where(eq(user.email, email))
-      .limit(1);
-    if (!found || !verifyPassword(password, found.password)) {
+    if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    const token = jwttoken.sign({
-      id: found.id,
-      email: found.email,
-      role: found.role,
-    });
+    const token = jwttoken.sign({ id: user.id, email: user.email, role: user.role });
     cookies.set(res, 'token', token);
 
     logger.info(`User signed in: ${email}`);
-    return res.status(200).json({
+    res.json({
       message: 'Signed in',
-      user: {
-        id: found.id,
-        name: found.name,
-        email: found.email,
-        role: found.role,
-      },
+      user: { id: user.id, name: user.name, email: user.email, role: user.role },
     });
   } catch (error) {
     logger.error('Signin error:', error);
-    return next(error);
+    next(error);
   }
 };
 
-export const signout = (_req, res) => {
+export const signout = (req, res) => {
   cookies.clear(res, 'token');
-  return res.status(200).json({ message: 'Signed out' });
+  logger.info(`User signed out: ${req.user?.email}`);
+  res.json({ message: 'Signed out' });
 };
