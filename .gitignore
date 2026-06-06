@@ -1,3 +1,5 @@
 node_modules/
 .env.*
 .neon_local/
+.claude
+CLAUDE.md
