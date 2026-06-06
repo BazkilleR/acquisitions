@@ -152,3 +152,29 @@
 {"level":"info","message":"::ffff:172.19.0.1 - - [06/Jun/2026:17:57:09 +0000] \"GET /api/users/2 HTTP/1.1\" 200 156 \"-\" \"HTTPie\"","service":"acquisitions-api"}
 {"level":"info","message":"::ffff:172.19.0.1 - - [06/Jun/2026:17:57:48 +0000] \"DELETE /api/users/5 HTTP/1.1\" 403 21 \"-\" \"HTTPie\"","service":"acquisitions-api"}
 {"level":"info","message":"::ffff:172.19.0.1 - - [06/Jun/2026:17:58:11 +0000] \"DELETE /api/users/5 HTTP/1.1\" 403 21 \"-\" \"HTTPie\"","service":"acquisitions-api"}
+{"level":"info","message":"Getting users...","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:172.19.0.1 - - [06/Jun/2026:18:03:32 +0000] \"GET /api/users HTTP/1.1\" 200 652 \"-\" \"HTTPie\"","service":"acquisitions-api"}
+{"level":"info","message":"Received request for health endpoint","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [06/Jun/2026:18:21:40 +0000] \"GET /health HTTP/1.1\" 200 73 \"-\" \"-\"","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [06/Jun/2026:18:21:41 +0000] \"GET /api HTTP/1.1\" 200 42 \"-\" \"-\"","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [06/Jun/2026:18:21:41 +0000] \"GET /nonexistent HTTP/1.1\" 404 27 \"-\" \"-\"","service":"acquisitions-api"}
+{"level":"info","message":"Received request for health endpoint","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [06/Jun/2026:18:23:45 +0000] \"GET /health HTTP/1.1\" 200 72 \"-\" \"-\"","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [06/Jun/2026:18:23:45 +0000] \"GET /api HTTP/1.1\" 200 42 \"-\" \"-\"","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [06/Jun/2026:18:23:45 +0000] \"GET /nonexistent HTTP/1.1\" 404 27 \"-\" \"-\"","service":"acquisitions-api"}
+{"level":"info","message":"Received request for health endpoint","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [06/Jun/2026:18:24:32 +0000] \"GET /health HTTP/1.1\" 200 73 \"-\" \"-\"","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [06/Jun/2026:18:24:32 +0000] \"GET /api HTTP/1.1\" 200 42 \"-\" \"-\"","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [06/Jun/2026:18:24:32 +0000] \"GET /nonexistent HTTP/1.1\" 404 27 \"-\" \"-\"","service":"acquisitions-api"}
+{"level":"info","message":"Received request for health endpoint","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [06/Jun/2026:18:28:04 +0000] \"GET /health HTTP/1.1\" 200 73 \"-\" \"-\"","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [06/Jun/2026:18:28:04 +0000] \"GET /api HTTP/1.1\" 200 42 \"-\" \"-\"","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [06/Jun/2026:18:28:04 +0000] \"GET /nonexistent HTTP/1.1\" 404 27 \"-\" \"-\"","service":"acquisitions-api"}
+{"level":"info","message":"Received request for health endpoint","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [06/Jun/2026:18:29:22 +0000] \"GET /health HTTP/1.1\" 200 72 \"-\" \"-\"","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [06/Jun/2026:18:29:22 +0000] \"GET /api HTTP/1.1\" 200 42 \"-\" \"-\"","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [06/Jun/2026:18:29:22 +0000] \"GET /nonexistent HTTP/1.1\" 404 27 \"-\" \"-\"","service":"acquisitions-api"}
+{"level":"info","message":"Received request for health endpoint","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [06/Jun/2026:18:31:22 +0000] \"GET /health HTTP/1.1\" 200 73 \"-\" \"-\"","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [06/Jun/2026:18:31:22 +0000] \"GET /api HTTP/1.1\" 200 42 \"-\" \"-\"","service":"acquisitions-api"}
+{"level":"info","message":"::ffff:127.0.0.1 - - [06/Jun/2026:18:31:22 +0000] \"GET /nonexistent HTTP/1.1\" 404 27 \"-\" \"-\"","service":"acquisitions-api"}

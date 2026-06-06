@@ -6,7 +6,9 @@ const authMiddleware = (req, res, next) => {
   const token = cookies.get(req, 'token');
 
   if (!token) {
-    return res.status(401).json({ error: 'Unauthorized', message: 'No token provided' });
+    return res
+      .status(401)
+      .json({ error: 'Unauthorized', message: 'No token provided' });
   }
 
   try {
@@ -14,7 +16,9 @@ const authMiddleware = (req, res, next) => {
     next();
   } catch (e) {
     logger.warn('Invalid token attempt', { ip: req.ip, path: req.path });
-    return res.status(401).json({ error: 'Unauthorized', message: 'Invalid or expired token' });
+    return res
+      .status(401)
+      .json({ error: 'Unauthorized', message: 'Invalid or expired token' });
   }
 };
 

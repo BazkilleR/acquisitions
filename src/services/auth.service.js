@@ -14,11 +14,20 @@ export const hashPassword = async password => {
 };
 
 export const getUserByEmail = async email => {
-  const [found] = await db.select().from(user).where(eq(user.email, email)).limit(1);
+  const [found] = await db
+    .select()
+    .from(user)
+    .where(eq(user.email, email))
+    .limit(1);
   return found ?? null;
 };
 
-export const createUser = async ({ name, email, password: plainPassword, role = 'user' }) => {
+export const createUser = async ({
+  name,
+  email,
+  password: plainPassword,
+  role = 'user',
+}) => {
   try {
     const existingUser = await db
       .select()

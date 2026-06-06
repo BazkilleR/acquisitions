@@ -24,7 +24,11 @@ export const getAllUsers = async () => {
 
 export const getUserById = async id => {
   try {
-    const [found] = await db.select(safeFields).from(user).where(eq(user.id, id)).limit(1);
+    const [found] = await db
+      .select(safeFields)
+      .from(user)
+      .where(eq(user.id, id))
+      .limit(1);
 
     if (!found) throw new Error('User not found');
 

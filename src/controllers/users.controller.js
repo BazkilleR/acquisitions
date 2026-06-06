@@ -1,6 +1,9 @@
 import logger from '#config/logger.js';
 import { formatValidationError } from '#utils/format.js';
-import { userIdSchema, updateUserSchema } from '#validations/users.validation.js';
+import {
+  userIdSchema,
+  updateUserSchema,
+} from '#validations/users.validation.js';
 import {
   getAllUsers as getAllUsersService,
   getUserById as getUserByIdService,
@@ -12,7 +15,11 @@ export const fetchAllUsers = async (req, res, next) => {
   try {
     logger.info('Getting users...');
     const allUsers = await getAllUsersService();
-    res.json({ message: 'Successfully retrieved users', users: allUsers, count: allUsers.length });
+    res.json({
+      message: 'Successfully retrieved users',
+      users: allUsers,
+      count: allUsers.length,
+    });
   } catch (e) {
     logger.error(e);
     next(e);
@@ -76,7 +83,9 @@ export const updateUser = async (req, res, next) => {
     }
 
     if (updates.role !== undefined && req.user.role !== 'admin') {
-      return res.status(403).json({ error: 'Only admins can change user roles' });
+      return res
+        .status(403)
+        .json({ error: 'Only admins can change user roles' });
     }
 
     const updatedUser = await updateUserService(id, updates);

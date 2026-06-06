@@ -20,13 +20,22 @@ export const signup = async (req, res, next) => {
     const { name, email, password, role } = validation.data;
     const user = await createUser({ name, email, password, role });
 
-    const token = jwttoken.sign({ id: user.id, email: user.email, role: user.role });
+    const token = jwttoken.sign({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
     cookies.set(res, 'token', token);
 
     logger.info(`User registered: ${email}`);
     res.status(201).json({
       message: 'User registered',
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (error) {
     if (error.message === 'User already exists') {
@@ -55,13 +64,22 @@ export const signin = async (req, res, next) => {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    const token = jwttoken.sign({ id: user.id, email: user.email, role: user.role });
+    const token = jwttoken.sign({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
     cookies.set(res, 'token', token);
 
     logger.info(`User signed in: ${email}`);
     res.json({
       message: 'Signed in',
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
     });
   } catch (error) {
     logger.error('Signin error:', error);

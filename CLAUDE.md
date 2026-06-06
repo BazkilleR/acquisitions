@@ -66,15 +66,15 @@ In `NODE_ENV=development`, `database.js` redirects queries to the Neon Local Doc
 
 `users` table (`src/models/user.model.js`):
 
-| Column       | Type         | Notes                     |
-| ------------ | ------------ | ------------------------- |
-| `id`         | serial PK    |                           |
-| `name`       | varchar(255) | not null                  |
-| `email`      | varchar(255) | not null, unique          |
-| `password`   | varchar(255) | bcrypt hash, not null     |
-| `role`       | varchar(255) | default `'user'`          |
-| `created_at` | timestamp    | defaultNow               |
-| `updated_at` | timestamp    | defaultNow               |
+| Column       | Type         | Notes                 |
+| ------------ | ------------ | --------------------- |
+| `id`         | serial PK    |                       |
+| `name`       | varchar(255) | not null              |
+| `email`      | varchar(255) | not null, unique      |
+| `password`   | varchar(255) | bcrypt hash, not null |
+| `role`       | varchar(255) | default `'user'`      |
+| `created_at` | timestamp    | defaultNow            |
+| `updated_at` | timestamp    | defaultNow            |
 
 ### Auth pattern
 
@@ -88,11 +88,11 @@ In `NODE_ENV=development`, `database.js` redirects queries to the Neon Local Doc
 
 `src/middleware/security.middleware.js` — Arcjet-powered, applied globally in `app.js`. Enforces role-based sliding window rate limits:
 
-| Role    | Limit       |
-| ------- | ----------- |
-| `admin` | 20 req/min  |
-| `user`  | 10 req/min  |
-| `guest` | 5 req/min   |
+| Role    | Limit      |
+| ------- | ---------- |
+| `admin` | 20 req/min |
+| `user`  | 10 req/min |
+| `guest` | 5 req/min  |
 
 Also blocks bots and shield-flagged traffic. Arcjet config is in `src/config/arcjet.js`.
 
@@ -121,15 +121,15 @@ A `.gitattributes` file enforces LF for all text files on checkout. Set `git con
 
 ## Docker
 
-| File                     | Purpose                                      |
-| ------------------------ | -------------------------------------------- |
-| `Dockerfile`             | Multi-stage: `development`, `production`     |
-| `docker-compose.dev.yml` | App + Neon Local sidecar, reads `.env.development` |
-| `docker-compose.prod.yml`| App only, reads `.env.production`            |
-| `.env.development`       | Dev credentials + `USE_NEON_LOCAL=true`      |
-| `.env.production`        | Prod credentials template                    |
-| `.env`                   | Host-only (npm run dev, db:migrate)          |
-| `scripts/dev.sh`         | Start dev stack, wait for DB, run migrations |
+| File                      | Purpose                                            |
+| ------------------------- | -------------------------------------------------- |
+| `Dockerfile`              | Multi-stage: `development`, `production`           |
+| `docker-compose.dev.yml`  | App + Neon Local sidecar, reads `.env.development` |
+| `docker-compose.prod.yml` | App only, reads `.env.production`                  |
+| `.env.development`        | Dev credentials + `USE_NEON_LOCAL=true`            |
+| `.env.production`         | Prod credentials template                          |
+| `.env`                    | Host-only (npm run dev, db:migrate)                |
+| `scripts/dev.sh`          | Start dev stack, wait for DB, run migrations       |
 
 Run migrations inside the container (not on host) so `DATABASE_URL` resolves correctly within the Docker network:
 

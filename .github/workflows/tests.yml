@@ -1,0 +1,95 @@
+name: Tests
+
+on:
+  push:
+    branches: [main, staging]
+  pull_request:
+    branches: [main, staging]
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+
+    env:
+      NODE_ENV: test
+      NODE_OPTIONS: --experimental-vm-modules
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        id: tests
+        run: npm test -- --coverage --coverageReporters=text --coverageReporters=lcov --json --outputFile=test-results.json
+        continue-on-error: true
+
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 30
+
+      - name: Generate job summary
+        if: always()
+        run: |
+          echo "## Test Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ -f test-results.json ]; then
+            TOTAL=$(node -e "const r = JSON.parse(require('fs').readFileSync('test-results.json')); console.log(r.numTotalTests ?? 0)")
+            PASSED=$(node -e "const r = JSON.parse(require('fs').readFileSync('test-results.json')); console.log(r.numPassedTests ?? 0)")
+            FAILED=$(node -e "const r = JSON.parse(require('fs').readFileSync('test-results.json')); console.log(r.numFailedTests ?? 0)")
+            SUITES=$(node -e "const r = JSON.parse(require('fs').readFileSync('test-results.json')); console.log(r.numTotalTestSuites ?? 0)")
+
+            if [ "$FAILED" -eq "0" ]; then
+              echo "### :white_check_mark: All tests passed" >> $GITHUB_STEP_SUMMARY
+            else
+              echo "### :x: $FAILED test(s) failed" >> $GITHUB_STEP_SUMMARY
+            fi
+
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "| Metric | Count |" >> $GITHUB_STEP_SUMMARY
+            echo "| --- | --- |" >> $GITHUB_STEP_SUMMARY
+            echo "| Test suites | $SUITES |" >> $GITHUB_STEP_SUMMARY
+            echo "| Total tests | $TOTAL |" >> $GITHUB_STEP_SUMMARY
+            echo "| Passed | $PASSED |" >> $GITHUB_STEP_SUMMARY
+            echo "| Failed | $FAILED |" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "### :warning: Test results file not found" >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Coverage report uploaded as artifact (retained for 30 days)." >> $GITHUB_STEP_SUMMARY
+
+      - name: Annotate test failures
+        if: steps.tests.outcome == 'failure' && always()
+        run: |
+          if [ -f test-results.json ]; then
+            node -e "
+              const results = JSON.parse(require('fs').readFileSync('test-results.json'));
+              for (const suite of results.testResults ?? []) {
+                for (const test of suite.testResults ?? []) {
+                  if (test.status === 'failed') {
+                    const file = suite.testFilePath.replace(process.cwd() + '/', '');
+                    const msg = test.failureMessages.join(' ').replace(/\n/g, ' ').slice(0, 200);
+                    console.log(\`::error file=\${file},title=Test failed: \${test.fullName}::\${msg}\`);
+                  }
+                }
+              }
+            "
+          fi
+          echo "::error title=Tests failed::One or more tests failed. See the summary and artifact for details."
+          exit 1
